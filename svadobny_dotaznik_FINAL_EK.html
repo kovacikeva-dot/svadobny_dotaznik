@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svadobný dotazník</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .people-container {
+            margin-bottom: 30px;
+        }
+
+        .person-section {
+            background: #f8f9fa;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .person-section.first {
+            background: #fffbf0;
+            border-color: #ffd699;
+        }
+
+        .person-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .person-number {
+            font-weight: bold;
+            font-size: 14px;
+            color: #7f8c8d;
+            background: #e8eef7;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .person-section.first .person-number {
+            background: #ffd699;
+            color: #8b5a00;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .person-section.first .remove-btn {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .radio-option input,
+        .checkbox-option input {
+            margin-top: 4px;
+            cursor: pointer;
+            accent-color: #3498db;
+        }
+
+        .radio-option label,
+        .checkbox-option label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button.add-person {
+            flex: 1;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.add-person:hover {
+            background: #229954;
+        }
+
+        button.submit {
+            flex: 1;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.submit:hover {
+            background: #2980b9;
+        }
+
+        button.submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #3498db;
+        }
+
+        .intolerance-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💍 Svadobný dotazník</h1>
+        <p class="subtitle">Prosím, potvrďte účasť a vyplňte dotazník pre všetkých členov vašej skupiny</p>
+
+        <div class="success-message" id="successMessage">
+            ✓ Ďakujeme! Vaša odpoveď bola odoslaná. 🎉
+        </div>
+        <div class="error-message" id="errorMessage">
+            ✗ Chyba pri odoslaní. Prosím, skúste neskôr alebo skontrolujte konzolu (F12).
+        </div>
+        <div class="loading" id="loading">
+            ⏳ Odosílam vašu odpoveď...
+        </div>
+
+        <form id="rsvpForm">
+            <div class="people-container" id="peopleContainer"></div>
+
+            <div class="button-group">
+                <button type="button" class="add-person" id="addPersonBtn">+ Pridať osobu</button>
+                <button type="submit" class="submit">Odoslať odpoveď</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // ⚠️ VLOŽ SVOJU GOOGLE APPS SCRIPT URL TU:
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2PJ0GMDF6GRhmevMXiN5T1LbWJiJKHXJ1rP6Vt-0Ie62SQViHaIJmwK96e2WD71pH/exec;
+
+        const questions = [
+            {
+                id: 'attendance',
+                label: 'Potvrdzujem účasť - Meno a priezvisko',
+                type: 'text',
+                required: true,
+                placeholder: 'Meno a priezvisko',
+                firstPersonOnly: true
+            },
+            {
+                id: 'additionalPeople',
+                label: 'Potvrdzujem účasť ďalšej osobe/osobám - meno a priezvisko',
+                type: 'text',
+                required: true,
+                placeholder: 'Meno a priezvisko'
+            },
+            {
+                id: 'mainCourse',
+                label: 'Hlavný chod svadobného oběda bude vegetariánsky',
+                type: 'radio',
+                required: true,
+                options: [
+                    'teším sa',
+                    'dal by som si masovú alternativu',
+                    'dal by som si vegánsky update',
+                    'mám potravinovú intoleranciu/diétu - špecifikuj'
+                ]
+            },
+            {
+                id: 'intolerance',
+                label: 'Špecifikovať intoleranciu/diétu',
+                type: 'text',
+                placeholder: 'Napíšte vašu intoleranciu alebo diétu',
+                conditional: true,
+                triggerQuestion: 'mainCourse',
+                triggerValue: 'mám potravinovú intoleranciu/diétu - špecifikuj'
+            },
+            {
+                id: 'beverages',
+                label: 'Hlavný príjem tekutín',
+                type: 'radio',
+                required: true,
+                options: [
+                    'Pivo',
+                    'Prosecco',
+                    'Nealko'
+                ]
+            },
+            {
+                id: 'panakia',
+                label: 'Preferujem na panákovanie - Doplnkový príjem tekutín',
+                type: 'radio',
+                required: true,
+                options: [
+                    'Slivovica',
+                    'Marhuľovica',
+                    'Borovička',
+                    'Whiskey',
+                    'Nič, chojte voľade s pálenkami'
+                ]
+            },
+            {
+                id: 'afterparty',
+                label: 'Sobotná áfterka bude priateľské zdieľanie priestoru a času za doprovodu hudby a jedla',
+                type: 'radio',
+                required: true,
+                options: [
+                    'Zostanem chillovať',
+                    'Idem oddychovať domov'
+                ]
+            },
+            {
+                id: 'notes',
+                label: 'Čokoľvek ďalšieho, čo je dôležité nám povedať',
+                type: 'textarea',
+                placeholder: 'Napíšte vašu správu...'
+            }
+        ];
+
+        let personCount = 0;
+
+        function createPersonSection(isFirst = false) {
+            personCount++;
+            const sectionId = `person-${personCount}`;
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = `person-section ${isFirst ? 'first' : ''}`;
+            sectionDiv.id = sectionId;
+
+            let html = `
+                <div class="person-header">
+                    <span class="person-number">${isFirst ? '1. Potvrdzujem účasť' : 'Osoba ' + personCount}</span>
+                    ${!isFirst ? `<button type="button" class="remove-btn" onclick="removePerson('${sectionId}')">Odstrániť</button>` : ''}
+                </div>
+            `;
+
+            questions.forEach(question => {
+                // Ak je firstPersonOnly, zobraz len prvej osobe
+                if (question.firstPersonOnly && !isFirst) return;
+                // Ak je firstPersonOnly false a je prvá osoba, preskočí
+                if (question.firstPersonOnly === false && isFirst) return;
+
+                // Pre ďalšie osoby použi "additionalPeople" label
+                let label = question.label;
+                if (!isFirst && question.id === 'additionalPeople') {
+                    label = `Osoba ${personCount} - Meno a priezvisko`;
+                }
+
+                const fieldId = `${question.id}-${personCount}`;
+                html += `<div class="form-group ${question.conditional ? 'intolerance-input' : ''}" id="${fieldId}-container">`;
+                
+                if (question.type === 'text') {
+                    html += `<label for="${fieldId}">${label}${question.required ? ' <span class="required">*</span>' : ''}</label>`;
+                    html += `<input type="text" id="${fieldId}" name="${question.id}-${personCount}" placeholder="${question.placeholder || ''}" ${question.required ? 'required' : ''}">`;
+                } else if (question.type === 'textarea') {
+                    html += `<label for="${fieldId}">${label}</label>`;
+                    html += `<textarea id="${fieldId}" name="${question.id}-${personCount}" placeholder="${question.placeholder || ''}"></textarea>`;
+                } else if (question.type === 'radio') {
+                    html += `<label>${label}${question.required ? ' <span class="required">*</span>' : ''}</label>`;
+                    html += `<div class="radio-group">`;
+                    question.options.forEach((option, index) => {
+                        const optionId = `${question.id}-${personCount}-${index}`;
+                        html += `
+                            <div class="radio-option">
+                                <input type="radio" id="${optionId}" name="${question.id}-${personCount}" value="${option}" ${question.required ? 'required' : ''} onchange="handleRadioChange('${fieldId}', '${question.triggerQuestion || ''}', '${question.triggerValue || ''}', '${option}')">
+                                <label for="${optionId}">${option}</label>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+            });
+
+            sectionDiv.innerHTML = html;
+            return sectionDiv;
+        }
+
+        function handleRadioChange(fieldId, triggerQuestion, triggerValue, selectedValue) {
+            // Skontroluj, či treba ukázať intoleranciu
+            if (selectedValue === triggerValue) {
+                const containerElement = document.getElementById(`${fieldId.split('-')[0]}-${fieldId.split('-')[1]}-container`);
+                if (containerElement) {
+                    containerElement.style.display = 'block';
+                }
+            } else if (triggerQuestion === '') {
+                const containerElement = document.getElementById(`${fieldId.split('-')[0]}-${fieldId.split('-')[1]}-container`);
+                if (containerElement) {
+                    containerElement.style.display = 'none';
+                }
+            }
+        }
+
+        function removePerson(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.remove();
+        }
+
+        function initForm() {
+            const container = document.getElementById('peopleContainer');
+            container.innerHTML = '';
+            personCount = 0;
+            container.appendChild(createPersonSection(true));
+        }
+
+        document.getElementById('addPersonBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('peopleContainer').appendChild(createPersonSection(false));
+        });
+
+        document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Skontroluj, či je SCRIPT_URL nastavená
+            if (SCRIPT_URL.includes('YOUR_DEPLOYMENT_ID')) {
+                document.getElementById('errorMessage').textContent = '❌ Chyba: Nevyplnil si svoju Google Apps Script URL. Čítaj návod!';
+                document.getElementById('errorMessage').style.display = 'block';
+                console.error('SCRIPT_URL nie je nastavená! Vložte svoju URL v kóde.');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            try {
+                const formData = new FormData(this);
+                const data = {
+                    timestamp: new Date().toLocaleString('sk-SK'),
+                    people: [],
+                    formData: {}
+                };
+
+                // Zbieraj všetky dáta
+                const personSections = document.querySelectorAll('.person-section');
+                
+                personSections.forEach((section, index) => {
+                    const inputs = section.querySelectorAll('input[type="text"], input[type="radio"]:checked, textarea');
+                    let personName = '';
+                    const personData = {};
+
+                    inputs.forEach(input => {
+                        const name = input.name;
+                        const value = input.value;
+                        
+                        if (name.includes('attendance') || name.includes('additionalPeople')) {
+                            personName = value;
+                        }
+                        
+                        personData[name] = value;
+                        data.formData[name] = value;
+                    });
+
+                    if (personName) {
+                        data.people.push({
+                            name: personName,
+                            data: personData
+                        });
+                    }
+                });
+
+                console.log('Odosielam dáta:', data);
+
+                // Odošli na Google Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    setTimeout(() => {
+                        this.reset();
+                        initForm();
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                } else {
+                    throw new Error(result.error || 'Neznáma chyba');
+                }
+            } catch (error) {
+                console.error('Chyba:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').textContent = `❌ Chyba: ${error.message}`;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        // Inicializuj formulár
+        initForm();
+    </script>
+</body>
+</html>
